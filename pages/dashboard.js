@@ -1,4 +1,5 @@
 import { useSession, signIn, signOut } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -23,4 +24,22 @@ export default function Dashboard() {
       <button onClick={() => signOut()}>Sign out</button>
     </div>
   );
+}
+
+// Server-side session check
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
 }
