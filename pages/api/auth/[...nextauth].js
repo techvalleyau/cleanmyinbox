@@ -2,8 +2,6 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 export default NextAuth({
-  trustHost: true,  // <--- Important for Vercel hosting
-
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -18,19 +16,27 @@ export default NextAuth({
       },
     }),
   ],
-
   secret: process.env.NEXTAUTH_SECRET,
-
+  trustHost: true,
   session: {
     strategy: "jwt",
   },
-
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        domain: "cleanmyinbox.vercel.app",
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, account }) {
-      if (account?.access_token) {
+      if (account) {
         token.accessToken = account.access_token;
-      }
-      if (account?.refresh_token) {
         token.refreshToken = account.refresh_token;
       }
       return token;
