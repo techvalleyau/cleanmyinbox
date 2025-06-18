@@ -1,16 +1,8 @@
-import { useSession, signIn, signOut, getSession } from "next-auth/react";
+// pages/dashboard.js
+import { getSession, signIn, signOut } from "next-auth/react";
 
-export default function Dashboard({ session: serverSession }) {
-  const { data: clientSession, status } = useSession();
-
-  console.log("Dashboard client session:", clientSession, "status:", status);
-  console.log("Dashboard server session:", serverSession);
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!clientSession) {
+export default function Dashboard({ session }) {
+  if (!session) {
     return (
       <div>
         <p>You must be signed in to view this page.</p>
@@ -21,29 +13,27 @@ export default function Dashboard({ session: serverSession }) {
 
   return (
     <div>
-      <h1>Welcome, {clientSession.user.name}!</h1>
-      <p>Email: {clientSession.user.email}</p>
+      <h1>Welcome, {session.user.name}!</h1>
+      <p>Email: {session.user.email}</p>
       <button onClick={() => signOut()}>Sign out</button>
     </div>
   );
 }
 
-// Server-side session fetching and redirect if no session
+// This runs on server before rendering dashboard page
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
   if (!session) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/", // or your login page route
         permanent: false,
       },
     };
   }
 
   return {
-    props: {
-      session,
-    },
+    props: { session },
   };
 }
