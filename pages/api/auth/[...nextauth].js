@@ -8,9 +8,9 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: "openid email profile https://www.googleapis.com/auth/gmail.readonly",
-        },
-      },
+          scope: "openid email profile https://www.googleapis.com/auth/gmail.readonly"
+        }
+      }
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
